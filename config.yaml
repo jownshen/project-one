@@ -4,10 +4,10 @@
 
 location:
   name: Cansaga, Consolacion, Cebu
-  # Barangay centre per OpenStreetMap. Drop a pin on your street in Google
-  # Maps and paste its lat/lng here for the closest forecast point.
-  lat: 10.3776
-  lon: 123.9615
+  # Forecast point: Cansaga Barangay Hall, Cebu North Road (OpenStreetMap).
+  # This repo is public, so use a public landmark here, never a home address.
+  lat: 10.37767
+  lon: 123.96158
   # Sea point for tide predictions (snaps to the nearest ocean grid cell).
   tide_lat: 10.37
   tide_lon: 123.98
