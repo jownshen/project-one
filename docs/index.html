@@ -100,6 +100,10 @@ th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--grid
 .stale { background: var(--critical); color: #fff; border-radius: 8px; padding: 10px 12px; margin-top: 12px; display: none; }
 a { color: var(--series-1); }
 .official { font-size: 0.85rem; color: var(--text-secondary); }
+.event { border-top: 1px solid var(--grid); padding: 10px 0; font-size: 0.9rem; }
+.event .head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-weight: 600; }
+.event .facts { color: var(--text-secondary); margin-top: 4px; }
+.event .facts span { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -144,6 +148,13 @@ a { color: var(--series-1); }
     <p class="official">Official sources: <a href="https://www.pagasa.dost.gov.ph/regional-forecast/visprsd">PAGASA Visayas</a> ·
       <a href="https://www.pagasa.dost.gov.ph/tropical-cyclone/severe-weather-bulletin">Tropical cyclone bulletin</a> ·
       <a href="https://sites.research.google/floods">Google Flood Hub</a></p>
+  </section>
+
+  <section class="card">
+    <h2>Our flood log</h2>
+    <p class="muted" id="learned-intro">Each flood we record becomes a rule: when the same conditions come back, the level goes up.</p>
+    <ul class="reasons" id="learned"></ul>
+    <div id="flood-log"></div>
   </section>
 
   <section class="card">
@@ -206,6 +217,7 @@ function render(d) {
 
   drawChart(d);
   drawTable(d);
+  renderFloodLog(d);
 
   const pg = d.pagasa || {};
   const items = [];
@@ -222,6 +234,27 @@ function render(d) {
     `<div class="src"><span>${esc(h.label)}</span><a href="tel:${esc(h.number)}">${esc(h.number)}</a></div>`).join("");
   $("sources").innerHTML = Object.values(d.sources).map((s) =>
     `<div class="src"><span>${esc(s.name)}</span><span class="${s.ok ? "ok" : "fail"}">${s.ok ? "✓ OK" : "✗ " + esc(s.error || "failed")}</span></div>`).join("");
+}
+
+function renderFloodLog(d) {
+  const rules = d.learned_rules || [];
+  $("learned").innerHTML = rules.map((r) => `<li><span class="pill lvl-${r.level}">${r.level}</span>
+    <span>${r.rain_6h_mm} mm of rain in 6 hours${r.tide_m != null ? ` around a tide of ${r.tide_m} m or higher` : ""}
+    <span class="muted">(learned from ${esc(r.label)})</span></span></li>`).join("");
+  const depth = { ankle: "Ankle deep", knee: "Knee deep", waist: "Waist deep", first_floor: "First floor flooded" };
+  $("flood-log").innerHTML = (d.flood_log || []).map((e) => {
+    const c = e.conditions || {};
+    const before = (e.replay || {})["6h_before"];
+    const rivers = Object.entries(e.rivers || {}).map(([k, v]) => `${esc(k[0].toUpperCase() + k.slice(1))}: ${esc(v)}`).join(" · ");
+    return `<div class="event">
+      <div class="head"><span>${fmtTime(e.time, { year: "numeric", month: "short", day: "numeric", hour: "numeric" })}</span><span>${depth[e.depth] || esc(e.depth)}</span></div>
+      <div class="facts"><span>Rain before: ${fmt1(c.rain_3h_mm)} mm in 3 h</span> · <span>${fmt1(c.rain_6h_mm)} mm in 6 h</span> · <span>${fmt1(c.rain_24h_mm)} mm in 24 h</span>
+        ${c.tide_max_m != null ? ` · <span>tide ${c.tide_max_m} m</span>` : ""}</div>
+      ${rivers ? `<div class="facts">Rivers: ${rivers}</div>` : ""}
+      ${before ? `<div class="facts">Original rules, 6 h before: <b>${before.level}</b></div>` : ""}
+      ${e.notes ? `<div class="facts">${esc(e.notes)}</div>` : ""}
+    </div>`;
+  }).join("");
 }
 
 function drawChart(d) {

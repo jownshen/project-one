@@ -76,6 +76,20 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m http.server -d docs                   # open http://localhost:8000
 ```
 
+## Flood log: learning from real floods
+
+`data/flood_log.yaml` records floods seen on our street (depth, time, rain, nearby river readings).
+After adding one, run `python src/flood_log.py`. It:
+
+1. looks up the rain (past 1/3/6/24/72 h) and tide at the time of each flood
+2. replays the original rules to show whether they would have warned 6 h and 1 h before
+3. turns each flood into a **learned rule**: "≥85% of that 6-hour rain (and, if the tide was high,
+   a tide within 10 cm of it) means WARNING / EMERGENCY". Ankle/knee-deep floods give WARNING,
+   waist-deep and worse give EMERGENCY.
+
+The 30-minute check applies the learned rules to rain that has already fallen plus the forecast.
+With more floods logged, the rules sharpen; with a few dozen, a proper statistical model becomes possible.
+
 ## Tuning
 After the first few rainy weeks, compare the dashboard with what actually happened on your street,
 and adjust `config.yaml`. Set `location.lat/lon` to a pin on your own street, and add your

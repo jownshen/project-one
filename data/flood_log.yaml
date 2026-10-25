@@ -1,0 +1,29 @@
+# Flooding seen on our street, plus nearby river readings at the time.
+# This repo is public: never put names, house numbers or addresses here.
+#
+# depth:        ankle (~10 cm) | knee (~45 cm) | waist (~90 cm) | first_floor (~1.5 m+)
+# rain_on_site: none | drizzle | persistent | heavy | typhoon
+# time:         when the water started / was first noticed (local time)
+#
+# After adding an event, run:  python src/flood_log.py
+# It looks up the rain and tide for each event and updates the learned rules.
+
+events:
+  - id: 2025-11-04-typhoon-tino
+    time: "2025-11-04T05:00:00+08:00"
+    depth: first_floor
+    rain_on_site: typhoon
+    peak: "2025-11-04T07:00:00+08:00"      # about 6 ft
+    receding: "2025-11-04T09:00:00+08:00"
+    notes: >-
+      Typhoon Tino (Kalmaegi). Entire first floor flooded. Reported as Nov 3;
+      rainfall data and news place the flooding on the morning of Nov 4.
+
+  - id: 2026-10-24-evening
+    time: "2026-10-24T23:00:00+08:00"
+    depth: ankle
+    rain_on_site: persistent
+    rivers:
+      cotcot: orange alert (Cotcot River CCTV)
+      paknaan: 4 m (Paknaan / Butuanon River)
+    notes: Persistent (not drizzle) rain for hours before. Noticed around 11 PM.

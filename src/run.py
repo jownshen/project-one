@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
+import flood_log  # noqa: E402
 import notify  # noqa: E402
 from risk import LEVELS, evaluate  # noqa: E402
 from sources import google_weather, open_meteo, pagasa  # noqa: E402
@@ -68,8 +69,8 @@ def gather(cfg, now):
                                "error": "GOOGLE_MAPS_API_KEY not set"}
 
     try:
-        past72, backup_hours = open_meteo.fetch_rain(loc["lat"], loc["lon"], tz, now_iso)
-        inputs["past72_mm"] = past72
+        past72, recent, backup_hours = open_meteo.fetch_rain(loc["lat"], loc["lon"], tz, now_iso)
+        inputs["past72_mm"], inputs["recent_hourly"] = past72, recent
         sources["past_rain"] = {"ok": True, "name": "Open-Meteo (past 72 h rain)"}
         if not inputs["hourly"]:
             inputs["hourly"] = backup_hours[:48]
@@ -79,7 +80,8 @@ def gather(cfg, now):
 
     try:
         tides, series = open_meteo.fetch_high_tides(loc["tide_lat"], loc["tide_lon"], tz)
-        inputs["high_tides"], extra["tide_series"] = tides, series
+        inputs["high_tides"], inputs["tide_series"] = tides, series
+        extra["tide_series"] = series
         sources["tides"] = {"ok": True, "name": "Open-Meteo Marine (tides)"}
     except Exception as e:
         sources["tides"] = {"ok": False, "name": "Open-Meteo Marine", "error": scrub(e)}
@@ -93,7 +95,7 @@ def gather(cfg, now):
     return inputs, sources, extra
 
 
-def build_dashboard(cfg, now, inputs, result, sources, extra):
+def build_dashboard(cfg, now, inputs, result, sources, extra, flood_events=(), learned=()):
     end = now + timedelta(hours=48)
 
     def in_window(t):
@@ -118,6 +120,12 @@ def build_dashboard(cfg, now, inputs, result, sources, extra):
         "sources": sources,
         "hotlines": cfg["dashboard"]["hotlines"],
         "thresholds": cfg["thresholds"],
+        "learned_rules": list(learned),
+        "flood_log": [
+            {k: e.get(k) for k in ("id", "time", "depth", "rain_on_site", "rivers", "notes",
+                                   "conditions", "replay")}
+            for e in sorted(flood_events, key=lambda e: e["time"], reverse=True)
+        ],
     }
 
 
@@ -131,7 +139,8 @@ def main():
     args = ap.parse_args()
 
     cfg = yaml.safe_load((ROOT / "config.yaml").read_text())
-    th, tz = cfg["thresholds"], ZoneInfo(cfg["timezone"])
+    flood_events, learned = flood_log.load_rules(cfg)
+    th, tz = {**cfg["thresholds"], "learned": learned}, ZoneInfo(cfg["timezone"])
 
     if args.fixture:
         inputs = json.loads(Path(args.fixture).read_text())
@@ -184,7 +193,7 @@ def main():
     state["last_level"] = result["level"]
     state["last_run"] = now.isoformat()
 
-    latest = build_dashboard(cfg, now, inputs, result, sources, extra)
+    latest = build_dashboard(cfg, now, inputs, result, sources, extra, flood_events, learned)
     history = load_json(HISTORY, [])
     history.append({"time": now.isoformat(), "level": result["level"],
                     "rain_next_24h_mm": result["metrics"]["rain_next_24h_mm"],

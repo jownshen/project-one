@@ -10,6 +10,8 @@ Input shape (all times ISO 8601 with timezone):
       "current": {"precip_mm": float | None},
       "past72_mm": float | None,
       "high_tides": [{"time", "height_m"}],
+      "tide_series": [{"time", "height_m"}]          (optional, hourly),
+      "recent_hourly": [{"time", "precip_mm"}]       (optional, rain already fallen),
       "pagasa": {"rainfall": None | "yellow" | "orange" | "red",
                  "tcws": int | None, "tcws_nearby": int | None,
                  "tc_active": bool, "tc_name": str | None,
@@ -124,6 +126,32 @@ def evaluate(inputs, th):
         add("WARNING", "PAGASA thunderstorm warning covers Consolacion")
     elif pg.get("thunderstorm") == "advisory":
         add("WATCH", "PAGASA thunderstorm advisory covers Consolacion")
+
+    # Learned from the flood log: conditions like a past flood on our street.
+    # Rain counts the hours already fallen (recent_hourly) plus the forecast.
+    forecast_start = hours[0]["time"] if hours else None
+    series = sorted(
+        [h for h in inputs.get("recent_hourly", [])
+         if forecast_start is None or _t(h["time"]) < _t(forecast_start)] + hours,
+        key=lambda h: h["time"])
+    tide_points = [(_t(x["time"]), x["height_m"])
+                   for x in inputs.get("tide_series") or inputs.get("high_tides", [])]
+    for rule in th.get("learned", []):
+        for i in range(max(len(series) - 5, 0)):
+            window = series[i:i + 6]
+            end = _t(window[-1]["time"]) + timedelta(hours=1)
+            if end < now:
+                continue  # already over
+            rain6 = sum(h.get("precip_mm") or 0 for h in window)
+            near = [hgt for tt, hgt in tide_points
+                    if end - timedelta(hours=2) <= tt <= end + timedelta(hours=1)]
+            tide = max(near, default=None)
+            tide_ok = rule["tide_m"] is None or tide is None or tide >= rule["tide_m"]
+            if rain6 >= rule["rain_6h_mm"] and tide_ok:
+                tide_txt = f" with the tide at {tide:.2f} m" if rule["tide_m"] is not None and tide else ""
+                add(rule["level"], f"Like {rule['label']}: {rain6:.1f} mm of rain in 6 hours"
+                    f"{tide_txt} (by {when(end)})", "learned")
+                break
 
     # Saturated ground: a full river and soaked soil make the same rain worse.
     past72 = inputs.get("past72_mm")

@@ -30,6 +30,14 @@ thresholds:
   current_rain_mm: {EMERGENCY: 20}
   wet_ground_72h_mm: 100        # past-72 h rain above this moves rain triggers up one level
 
+# Learning from data/flood_log.yaml (run `python src/flood_log.py` after editing it).
+# Each reported flood becomes a rule that fires slightly below the conditions seen then.
+learning:
+  rain_margin: 0.85             # fire at 85% of the 6-hour rain that caused a past flood
+  tide_margin_m: 0.10           # ...and 10 cm below the tide height at the time
+  tide_relevant_m: 1.0          # tides below this weren't part of the cause; rule ignores tide
+  depth_levels: {ankle: WARNING, knee: WARNING, waist: EMERGENCY, first_floor: EMERGENCY}
+
 pagasa:
   province: Cebu
   town: Consolacion
