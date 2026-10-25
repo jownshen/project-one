@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cansaga Flood Watch</title>
+<meta name="description" content="Flood and weather risk for Cansaga, Consolacion, Cebu - updated every 30 minutes.">
+<style>
+:root {
+  color-scheme: light;
+  --surface-0: #f4f3f0;
+  --surface-1: #fcfcfb;
+  --border: #e2e1dc;
+  --grid: #ebeae6;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #7a7974;
+  --series-1: #2a78d6;
+  --tide: #52514e;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --badge-ink: #0b0b0b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-0: #111110;
+    --surface-1: #1a1a19;
+    --border: #2e2e2c;
+    --grid: #262624;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e88;
+    --series-1: #3987e5;
+    --tide: #c3c2b7;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-0: #111110;
+  --surface-1: #1a1a19;
+  --border: #2e2e2c;
+  --grid: #262624;
+  --text-primary: #f0efec;
+  --text-secondary: #c3c2b7;
+  --text-muted: #8f8e88;
+  --series-1: #3987e5;
+  --tide: #c3c2b7;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--surface-0); color: var(--text-primary);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+h1 { font-size: 1.15rem; margin: 0; }
+h2 { font-size: 0.95rem; margin: 0 0 10px; color: var(--text-secondary); font-weight: 600; }
+.muted { color: var(--text-muted); font-size: 0.85rem; }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 12px; }
+.status { display: flex; gap: 10px 14px; align-items: center; flex-wrap: wrap; }
+.badge {
+  display: inline-flex; align-items: center; gap: 8px; border-radius: 999px;
+  padding: 8px 16px; font-weight: 700; font-size: 1.25rem; color: var(--badge-ink); white-space: nowrap;
+}
+.badge svg { width: 22px; height: 22px; flex: none; }
+.lvl-NORMAL { background: var(--good); color: #fff; }
+.lvl-WATCH { background: var(--warning); }
+.lvl-WARNING { background: var(--serious); }
+.lvl-EMERGENCY { background: var(--critical); color: #fff; }
+.headline { font-size: 0.95rem; color: var(--text-secondary); }
+ul.reasons { margin: 12px 0 0; padding: 0; list-style: none; }
+ul.reasons li { padding: 8px 0; border-top: 1px solid var(--grid); display: flex; gap: 10px; align-items: baseline; }
+.pill { font-size: 0.7rem; font-weight: 700; border-radius: 6px; padding: 2px 6px; flex: none; color: var(--badge-ink); }
+.pill.lvl-NORMAL { background: var(--grid); color: var(--text-secondary); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+.tile .v { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tile .k { font-size: 0.8rem; color: var(--text-secondary); }
+.chart-wrap { position: relative; }
+svg.chart { width: 100%; height: auto; display: block; }
+svg.chart text { fill: var(--text-muted); font-size: 11px; font-family: inherit; }
+.tip {
+  position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+  white-space: nowrap; display: none; z-index: 2;
+}
+.tip b { font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 16px; font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px; flex-wrap: wrap; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.legend .l-rain::before { background: var(--series-1); }
+.legend .l-tide::before { width: 0; height: 12px; border-left: 2px dashed var(--tide); border-radius: 0; }
+button.link { background: none; border: 0; color: var(--series-1); padding: 0; font: inherit; font-size: 0.85rem; cursor: pointer; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--grid); }
+.table-scroll { max-height: 320px; overflow: auto; margin-top: 8px; }
+.src { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; font-size: 0.85rem; }
+.ok { color: var(--good); } .fail { color: var(--critical); }
+.stale { background: var(--critical); color: #fff; border-radius: 8px; padding: 10px 12px; margin-top: 12px; display: none; }
+a { color: var(--series-1); }
+.official { font-size: 0.85rem; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 id="place">Cansaga Flood Watch</h1>
+    <span class="muted" id="updated">Loading…</span>
+  </header>
+  <div class="stale" id="stale" role="alert"></div>
+
+  <section class="card" aria-live="polite">
+    <div class="status">
+      <span class="badge" id="badge"></span>
+      <span class="headline" id="headline"></span>
+    </div>
+    <ul class="reasons" id="reasons"></ul>
+  </section>
+
+  <section class="card">
+    <div class="tiles">
+      <div class="tile"><div class="v" id="t-24h">–</div><div class="k">Rain forecast, next 24 h</div></div>
+      <div class="tile"><div class="v" id="t-3h">–</div><div class="k">Heaviest 3 hours ahead</div></div>
+      <div class="tile"><div class="v" id="t-72h">–</div><div class="k">Rain in the past 72 h</div></div>
+      <div class="tile"><div class="v" id="t-tide">–</div><div class="k">Next high tide</div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Rain per hour (mm), next 48 hours</h2>
+    <div class="chart-wrap" id="chart-wrap">
+      <svg class="chart" id="chart" role="img" aria-label="Hourly rain forecast bar chart"></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend"><span class="l-rain">Rain (mm/hour)</span><span class="l-tide">High tide</span></div>
+    <button class="link" id="toggle-table" aria-expanded="false">Show as table</button>
+    <div class="table-scroll" id="table" hidden></div>
+  </section>
+
+  <section class="card">
+    <h2>PAGASA official warnings</h2>
+    <div id="pagasa"></div>
+    <p class="official">Official sources: <a href="https://www.pagasa.dost.gov.ph/regional-forecast/visprsd">PAGASA Visayas</a> ·
+      <a href="https://www.pagasa.dost.gov.ph/tropical-cyclone/severe-weather-bulletin">Tropical cyclone bulletin</a> ·
+      <a href="https://sites.research.google/floods">Google Flood Hub</a></p>
+  </section>
+
+  <section class="card">
+    <h2>Emergency contacts</h2>
+    <div id="hotlines"></div>
+    <p class="official">This dashboard adds to official advisories. It doesn't replace them. Always follow PAGASA and Consolacion MDRRMO instructions.</p>
+  </section>
+
+  <section class="card">
+    <h2>Data sources (this update)</h2>
+    <div id="sources"></div>
+    <p class="muted">Forecast: Google Weather API, which blends Google DeepMind's WeatherNext AI models with traditional forecasts. Backup forecast, past rain and tides: Open-Meteo.</p>
+  </section>
+</main>
+
+<script>
+const ICONS = {
+  NORMAL: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+  WATCH: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/></svg>',
+  WARNING: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v4M12 18h.01"/></svg>',
+  EMERGENCY: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h8l6 6v8l-6 6H8l-6-6V8z"/><path d="M12 7v6M12 17h.01"/></svg>',
+};
+const HEADLINES = {
+  NORMAL: "No flood or severe weather risk expected in the next 24 hours.",
+  WATCH: "Keep an eye on the weather. Rain or heat could become a problem.",
+  WARNING: "Prepare now. Move valuables up, charge phones, check drainage.",
+  EMERGENCY: "High flood or storm risk. Be ready to evacuate if MDRRMO says so.",
+};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmtTime = (iso, opts) => new Date(iso).toLocaleString("en-PH", { timeZone: "Asia/Manila", ...opts });
+const hourLabel = (iso) => fmtTime(iso, { hour: "numeric" });
+const fmt1 = (v) => (v == null ? "–" : (Math.round(v * 10) / 10).toString());
+
+function render(d) {
+  $("place").textContent = `${d.location.name.split(",")[0]} Flood Watch`;
+  const gen = new Date(d.generated_at);
+  $("updated").textContent = "Updated " + fmtTime(d.generated_at, { weekday: "short", hour: "numeric", minute: "2-digit" });
+  const ageMin = (Date.now() - gen) / 60000;
+  const stale = $("stale");
+  if (ageMin > 90) {
+    stale.style.display = "block";
+    stale.textContent = `This data is ${Math.round(ageMin / 60)} hours old. The automatic check may have stopped. Check PAGASA directly.`;
+  } else stale.style.display = "none";
+
+  const badge = $("badge");
+  badge.className = `badge lvl-${d.level}`;
+  badge.innerHTML = ICONS[d.level] + `<span>${d.level}</span>`;
+  $("headline").textContent = HEADLINES[d.level];
+  $("reasons").innerHTML = d.reasons.length
+    ? d.reasons.map((r) => `<li><span class="pill lvl-${r.level}">${r.level === "NORMAL" ? "INFO" : r.level}</span><span>${esc(r.text)}</span></li>`).join("")
+    : "";
+
+  const m = d.metrics;
+  $("t-24h").textContent = `${fmt1(m.rain_next_24h_mm)} mm`;
+  $("t-3h").textContent = `${fmt1(m.max_rain_3h_mm)} mm`;
+  $("t-72h").textContent = m.past72_mm == null ? "–" : `${fmt1(m.past72_mm)} mm`;
+  const nextTide = d.high_tides.find((t) => new Date(t.time) > Date.now());
+  $("t-tide").textContent = nextTide ? hourLabel(nextTide.time) : "–";
+
+  drawChart(d);
+  drawTable(d);
+
+  const pg = d.pagasa || {};
+  const items = [];
+  items.push(pg.rainfall ? `<b>${pg.rainfall.toUpperCase()} rainfall warning</b> for this area` : "No heavy rainfall warning for Consolacion");
+  if (pg.tcws) items.push(`<b>Wind Signal No. ${pg.tcws}</b> for Cebu ${esc(pg.tc_name || "")}`);
+  else if (pg.tcws_nearby) items.push(`Wind Signal No. ${pg.tcws_nearby} for other parts of Cebu ${esc(pg.tc_name || "")}`);
+  else items.push(pg.tc_active ? `Tropical cyclone inside PAR ${esc(pg.tc_name || "")}, no signal for Cebu` : "No tropical cyclone inside the Philippine Area of Responsibility");
+  items.push(pg.thunderstorm ? `Thunderstorm ${pg.thunderstorm} covers Consolacion` : "No current thunderstorm advisory for Consolacion");
+  $("pagasa").innerHTML = d.sources.pagasa && !d.sources.pagasa.ok
+    ? `<p class="fail">Couldn't read PAGASA this update. Check the links below.</p>`
+    : `<ul class="reasons">${items.map((i) => `<li>${i}</li>`).join("")}</ul>`;
+
+  $("hotlines").innerHTML = (d.hotlines || []).map((h) =>
+    `<div class="src"><span>${esc(h.label)}</span><a href="tel:${esc(h.number)}">${esc(h.number)}</a></div>`).join("");
+  $("sources").innerHTML = Object.values(d.sources).map((s) =>
+    `<div class="src"><span>${esc(s.name)}</span><span class="${s.ok ? "ok" : "fail"}">${s.ok ? "✓ OK" : "✗ " + esc(s.error || "failed")}</span></div>`).join("");
+}
+
+function drawChart(d) {
+  const hours = d.hourly;
+  const svg = $("chart");
+  const W = Math.max(300, Math.round($("chart-wrap").clientWidth)), H = 240, L = 30, R = 8, T = 18, B = 34;
+  const labelEvery = W < 500 ? 12 : 6;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const n = Math.max(hours.length, 1);
+  const step = (W - L - R) / n;
+  const maxMm = Math.max(...hours.map((h) => h.precip_mm || 0));
+  const tickStep = [1, 2, 5, 10, 20, 50].find((s) => s * 4 >= maxMm) || 100;
+  const niceMax = tickStep * 4;
+  const y = (v) => T + (H - T - B) * (1 - v / niceMax);
+  const t0 = hours.length ? new Date(hours[0].time).getTime() : 0;
+  const xAt = (iso) => L + ((new Date(iso).getTime() - t0) / 3600000) * step;
+  let out = "";
+  for (let i = 0; i <= 4; i++) {
+    const v = tickStep * i;
+    out += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+    out += `<text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  }
+  d.high_tides.forEach((t) => {
+    const x = xAt(t.time) + step / 2;
+    if (x < L || x > W - R) return;
+    out += `<line x1="${x}" x2="${x}" y1="${T}" y2="${H - B}" stroke="var(--tide)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    const anchor = x > W - R - 30 ? "end" : x < L + 30 ? "start" : "middle";
+    out += `<text x="${x}" y="${T - 6}" text-anchor="${anchor}">HT ${t.height_m} m</text>`;
+  });
+  const bw = Math.max(step - 2, 1);
+  hours.forEach((h, i) => {
+    const x = L + i * step + 1;
+    const v = h.precip_mm || 0;
+    if (v > 0) {
+      const top = y(v), base = y(0), r = Math.min(4, bw / 2, base - top);
+      out += `<path d="M${x},${base} V${top + r} q0,-${r} ${r},-${r} H${x + bw - r} q${r},0 ${r},${r} V${base} Z" fill="var(--series-1)"/>`;
+    }
+    const hr = Number(fmtTime(h.time, { hour: "numeric", hour12: false }));
+    if (hr % labelEvery === 0) {
+      out += `<text x="${x + bw / 2}" y="${H - B + 16}" text-anchor="middle">${hourLabel(h.time)}</text>`;
+      if (hr === 0) out += `<text x="${x + bw / 2}" y="${H - B + 30}" text-anchor="middle" style="font-weight:600">${fmtTime(h.time, { weekday: "short" })}</text>`;
+    }
+    out += `<rect class="hit" data-i="${i}" x="${L + i * step}" y="${T}" width="${step}" height="${H - T - B}" fill="transparent"/>`;
+  });
+  out += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--text-muted)" stroke-width="1"/>`;
+  svg.innerHTML = out;
+
+  const tip = $("tip"), wrap = $("chart-wrap");
+  svg.querySelectorAll(".hit").forEach((el) => {
+    const show = (ev) => {
+      const h = hours[+el.dataset.i];
+      const tide = d.high_tides.find((t) => Math.abs(new Date(t.time) - new Date(h.time)) < 3600000);
+      tip.innerHTML = `<div>${fmtTime(h.time, { weekday: "short", hour: "numeric" })}</div>
+        <div>Rain <b>${fmt1(h.precip_mm)} mm</b>${h.precip_prob != null ? ` · ${h.precip_prob}% chance` : ""}</div>
+        ${h.gust_kmh != null ? `<div>Gusts <b>${Math.round(h.gust_kmh)} km/h</b></div>` : ""}
+        ${h.heat_index_c != null ? `<div>Feels like <b>${Math.round(h.heat_index_c)} °C</b></div>` : ""}
+        ${h.condition ? `<div>${esc(h.condition)}</div>` : ""}
+        ${tide ? `<div>High tide ${tide.height_m} m</div>` : ""}`;
+      tip.style.display = "block";
+      const box = wrap.getBoundingClientRect(), r = el.getBoundingClientRect();
+      let left = r.left - box.left + r.width / 2 - tip.offsetWidth / 2;
+      left = Math.max(0, Math.min(left, box.width - tip.offsetWidth));
+      tip.style.left = left + "px";
+      tip.style.top = "0px";
+      el.setAttribute("fill", "rgb(127 127 127 / 0.12)");
+    };
+    const hide = () => { tip.style.display = "none"; el.setAttribute("fill", "transparent"); };
+    el.addEventListener("pointerenter", show);
+    el.addEventListener("pointerleave", hide);
+  });
+}
+
+function drawTable(d) {
+  const rows = d.hourly.map((h) => `<tr><td>${fmtTime(h.time, { weekday: "short", hour: "numeric" })}</td>
+    <td>${fmt1(h.precip_mm)}</td><td>${h.precip_prob ?? "–"}%</td><td>${h.gust_kmh != null ? Math.round(h.gust_kmh) : "–"}</td>
+    <td>${h.heat_index_c != null ? Math.round(h.heat_index_c) : "–"}</td></tr>`).join("");
+  $("table").innerHTML = `<table><thead><tr><th>Hour</th><th>Rain mm</th><th>Chance</th><th>Gust km/h</th><th>Feels °C</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+$("toggle-table").addEventListener("click", (e) => {
+  const t = $("table");
+  t.hidden = !t.hidden;
+  e.target.setAttribute("aria-expanded", String(!t.hidden));
+  e.target.textContent = t.hidden ? "Show as table" : "Hide table";
+});
+
+async function load() {
+  try {
+    const res = await fetch(`data/latest.json?t=${Date.now()}`, { cache: "no-store" });
+    lastData = await res.json();
+    render(lastData);
+  } catch (e) {
+    $("updated").textContent = "Couldn't load data. Retrying…";
+  }
+}
+let lastData = null;
+load();
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => lastData && drawChart(lastData), 150);
+});
+setInterval(load, 5 * 60 * 1000);
+</script>
+</body>
+</html>

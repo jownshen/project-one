@@ -1,0 +1,46 @@
+# Cansaga Flood & Weather Watch settings.
+# Phone numbers, emails and API keys are NOT stored here. They live in
+# GitHub repo secrets (see README), because this repo is public.
+
+location:
+  name: Cansaga, Consolacion, Cebu
+  # Barangay centre per OpenStreetMap. Drop a pin on your street in Google
+  # Maps and paste its lat/lng here for the closest forecast point.
+  lat: 10.3776
+  lon: 123.9615
+  # Sea point for tide predictions (snaps to the nearest ocean grid cell).
+  tide_lat: 10.37
+  tide_lon: 123.98
+
+timezone: Asia/Manila
+
+# Starting thresholds. Rain thresholds follow PAGASA's rainfall warning
+# system (yellow 7.5-15 mm/3 h, orange 15-30, red >30) and the Dec 2011
+# Cansaga River flood (185 mm in a day). Tune after a few rainy weeks.
+thresholds:
+  horizon_h: 24                 # how far ahead the forecast checks look
+  rain_3h_mm:     {WATCH: 7.5, WARNING: 15, EMERGENCY: 30}
+  rain_24h_mm:    {WATCH: 50, WARNING: 100, EMERGENCY: 150}
+  rain_3h_at_high_tide_mm: {WARNING: 7.5, EMERGENCY: 15}
+  high_tide_window_h: 2         # rain this close to a high tide counts as "at high tide"
+  high_tide_min_m: 0.8          # ignore weak high tides below this height (m above mean sea level)
+  thunder_prob_pct: {WATCH: 60}
+  gust_kmh:       {WARNING: 60}
+  heat_index_c:   {WATCH: 39, WARNING: 42}
+  current_rain_mm: {EMERGENCY: 20}
+  wet_ground_72h_mm: 100        # past-72 h rain above this moves rain triggers up one level
+
+pagasa:
+  province: Cebu
+  town: Consolacion
+
+alerts:
+  min_level: EMERGENCY          # email + SMS only at this level
+  cooldown_h: 6                 # don't repeat the same alert within this window
+  failure_alert_after: 3        # email if this many runs in a row fail
+
+dashboard:
+  history_days: 7
+  # Add your barangay / MDRRMO hotline numbers here to show them on the dashboard.
+  hotlines:
+    - {label: National emergency, number: "911"}

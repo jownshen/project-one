@@ -1,0 +1,410 @@
+{
+ "now": "2026-10-25T12:00:00+08:00",
+ "hourly": [
+  {
+   "time": "2026-10-25T12:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T13:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T14:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T15:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T16:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T17:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T18:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T19:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T20:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T21:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T22:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-25T23:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T00:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T01:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T02:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T03:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T04:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T05:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T06:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T07:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T08:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T09:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T10:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T11:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T12:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T13:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T14:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T15:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T16:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T17:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T18:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T19:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T20:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T21:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T22:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-26T23:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T00:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T01:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T02:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T03:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T04:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T05:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T06:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T07:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T08:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T09:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T10:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  },
+  {
+   "time": "2026-10-27T11:00:00+08:00",
+   "precip_mm": 0.0,
+   "precip_prob": 5,
+   "thunder_prob": 10,
+   "gust_kmh": 20,
+   "heat_index_c": 34
+  }
+ ],
+ "current": {},
+ "past72_mm": 5.0,
+ "high_tides": [
+  {
+   "time": "2026-10-25T22:00:00+08:00",
+   "height_m": 1.5
+  },
+  {
+   "time": "2026-10-26T10:00:00+08:00",
+   "height_m": 1.5
+  },
+  {
+   "time": "2026-10-26T22:00:00+08:00",
+   "height_m": 1.5
+  },
+  {
+   "time": "2026-10-27T10:00:00+08:00",
+   "height_m": 1.5
+  }
+ ],
+ "pagasa": {}
+}
