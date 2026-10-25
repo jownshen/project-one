@@ -126,6 +126,8 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="print alerts, don't send")
     ap.add_argument("--fixture", help="evaluate a saved input file and print the result")
     ap.add_argument("--force-level", choices=LEVELS, help="override the level (test alerts)")
+    ap.add_argument("--test-channel", choices=["email", "sms", "push"],
+                    help="with --force-level: send the test to this channel only")
     args = ap.parse_args()
 
     cfg = yaml.safe_load((ROOT / "config.yaml").read_text())
@@ -175,7 +177,8 @@ def main():
             print(f"[dry-run] would send {kind}:\n{subject}\n{body}\nSMS: {short}")
         else:
             priority = "default" if kind == "all_clear" else "urgent"
-            print(kind, notify.send_all(subject, body, short, priority))
+            print(kind, notify.send_all(subject, body, short, priority, only=args.test_channel))
+    if kind and not args.test_channel:  # a single-channel test leaves alert state alone
         state["alert"] = (None if kind == "all_clear"
                           else {"level": alert_result["level"], "time": now.isoformat()})
     state["last_level"] = result["level"]

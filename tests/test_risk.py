@@ -167,3 +167,9 @@ def test_synthetic_tcb_signal_for_cebu():
             "<p>TCWS No. 1 Visayas: Samar</p>")
     out = pagasa.parse_tcb(html, "Cebu", "Consolacion")
     assert out["tc_active"] and out["tcws"] == 3 and out["tc_name"] == "Typhoon ODETTE"
+
+
+def test_sms_error_redacts_phone_numbers():
+    body = '{"number": ["09171234567 is invalid", "+639181234567"]}'
+    out = notify._redact(body)
+    assert "9171234567" not in out and "9181234567" not in out

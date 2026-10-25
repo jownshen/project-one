@@ -8,6 +8,7 @@ variables (GitHub repo secrets); any channel without settings is skipped.
   Push:  NTFY_TOPIC (free ntfy.sh app; needs mobile data)
 """
 import os
+import re
 import smtplib
 from datetime import datetime, timedelta
 from email.message import EmailMessage
@@ -82,12 +83,29 @@ def send_sms(text):
     key, phones = os.environ.get("SEMAPHORE_API_KEY"), _split("ALERT_PHONES")
     if not (key and phones):
         return "sms: not configured"
+    phones = [re.sub(r"[\s+()-]", "", p) for p in phones]
     data = {"apikey": key, "number": ",".join(phones), "message": text}
     if os.environ.get("SEMAPHORE_SENDER"):
         data["sendername"] = os.environ["SEMAPHORE_SENDER"]
     resp = requests.post("https://api.semaphore.co/api/v4/messages", data=data, timeout=30)
-    resp.raise_for_status()
-    return f"sms: sent to {len(phones)}"
+    if not resp.ok:
+        # Actions logs are public: show Semaphore's reason, but never the numbers.
+        raise RuntimeError(f"HTTP {resp.status_code}: {_redact(resp.text)} | account: {_sms_account(key)}")
+    statuses = [m.get("status") for m in resp.json() if isinstance(m, dict)]
+    return f"sms: sent to {len(phones)} ({', '.join(map(str, statuses))})"
+
+
+def _redact(text):
+    return re.sub(r"\+?\d{10,13}", "<number>", text)[:300]
+
+
+def _sms_account(key):
+    try:
+        acct = requests.get("https://api.semaphore.co/api/v4/account",
+                            params={"apikey": key}, timeout=15).json()
+        return {k: acct.get(k) for k in ("status", "credit_balance")}
+    except Exception as e:
+        return f"unavailable ({type(e).__name__})"
 
 
 def send_push(subject, text, priority):
@@ -100,10 +118,14 @@ def send_push(subject, text, priority):
     return f"push: sent"
 
 
-def send_all(subject, body, short, priority="urgent"):
+def send_all(subject, body, short, priority="urgent", only=None):
+    """`only` limits sending to one channel ("email", "sms" or "push") for tests."""
     results = []
-    for fn, args in ((send_email, (subject, body)), (send_sms, (short,)),
-                     (send_push, (subject, short, priority))):
+    channels = {"email": (send_email, (subject, body)), "sms": (send_sms, (short,)),
+                "push": (send_push, (subject, short, priority))}
+    for name, (fn, args) in channels.items():
+        if only and name != only:
+            continue
         try:
             results.append(fn(*args))
         except Exception as e:  # one broken channel must not block the others

@@ -9,6 +9,10 @@ on:
         description: "Send a TEST alert at this level (leave blank for a normal run)"
         required: false
         default: ""
+      test_channel:
+        description: "Only test this channel: email, sms or push (blank = all)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -54,7 +58,8 @@ jobs:
           ALERT_PHONES: ${{ secrets.ALERT_PHONES }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           FORCE_LEVEL: ${{ inputs.force_level }}
-        run: python src/run.py ${FORCE_LEVEL:+--force-level "$FORCE_LEVEL"}
+          TEST_CHANNEL: ${{ inputs.test_channel }}
+        run: python src/run.py ${FORCE_LEVEL:+--force-level "$FORCE_LEVEL"} ${TEST_CHANNEL:+--test-channel "$TEST_CHANNEL"}
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
