@@ -17,6 +17,8 @@ import requests
 
 from risk import rank
 
+SMS_MAX = 160
+
 
 def decide(state, level, now, cfg):
     """Returns "alert", "reminder", "all_clear" or None.
@@ -49,14 +51,18 @@ def compose(kind, result, location, dashboard_url):
     else:
         prefix = "Reminder - still " if kind == "reminder" else ""
         subject = f"{prefix}{level}: flood/weather risk in {location}"
-        short = f"CANSAGA WEATHER {prefix.upper()}{level}: {top[0] if top else ''}"
+        reason = top[0].split(" - ")[0] if top else ""  # drop the explanation tail
+        short = f"CANSAGA WEATHER {prefix.upper()}{level}: {reason}."
+        advice = " Prepare to evacuate if MDRRMO advises."
+        if len(short) + len(advice) <= SMS_MAX:
+            short += advice
         body = f"{prefix}{level} for {location}.\n\n" + "\n".join(f"- {t}" for t in top) + (
             "\n\nFollow PAGASA and Consolacion MDRRMO instructions. Move valuables up, charge"
             " phones, and be ready to evacuate if told to.\n")
     if dashboard_url:
         body += f"\nDashboard: {dashboard_url}\n"
-        short += f" {dashboard_url}"
-    return subject, body, short[:300]
+    # No links in SMS: PH networks block texts with URLs, and it keeps to one 160-char SMS.
+    return subject, body, short[:SMS_MAX]
 
 
 def _split(name):

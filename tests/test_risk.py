@@ -113,9 +113,10 @@ def test_alert_lifecycle():
 def test_compose_sms_is_short_and_not_test_prefixed():
     result = evaluate(json.loads((FIX / "dec2011_storm.json").read_text()), TH)
     _, body, sms = notify.compose("alert", result, "Cansaga", "https://example.org")
-    assert len(sms) <= 300
+    assert len(sms) <= 160  # one SMS
+    assert "http" not in sms  # PH networks block texts with links
     assert not sms.upper().startswith("TEST")  # Semaphore drops messages starting with TEST
-    assert "EMERGENCY" in body
+    assert "EMERGENCY" in body and "https://example.org" in body
 
 
 def test_scrub_hides_keys(monkeypatch):
