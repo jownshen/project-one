@@ -31,51 +31,6 @@ If more than 100 mm fell in the past 72 h, every rain trigger moves up one level
 "All clear" is sent once the level drops to WATCH or below.
 If the forecast can't be fetched 3 runs in a row, you get an email that the dashboard has gone quiet.
 
-## Setup
-
-### 1. Google Weather API key
-1. Go to <https://console.cloud.google.com/>, create a project (e.g. `cansaga-weather`), and enable billing.
-2. Enable **Weather API**: APIs & Services → Library → search "Weather API" → Enable.
-3. APIs & Services → Credentials → Create credentials → API key. Edit it → *API restrictions* → restrict to **Weather API**.
-4. Optional: set a budget alert (Billing → Budgets) at a small amount so you're never surprised.
-
-### 2. Email (Gmail app password)
-Google Account → Security → 2-Step Verification (must be on) → **App passwords** → create one named "cansaga-weather".
-
-### 3. SMS (Semaphore, optional)
-Sign up at <https://semaphore.co>, load credit (about ₱0.50 per SMS), copy the API key.
-Free alternative: install the **ntfy** app, subscribe to a hard-to-guess topic name, and set `NTFY_TOPIC` instead.
-
-### 4. Add the secrets to GitHub
-Repo → Settings → Secrets and variables → Actions → *New repository secret*:
-
-| Secret | Example |
-|---|---|
-| `GOOGLE_MAPS_API_KEY` | `AIza…` |
-| `SMTP_USER` | `you@gmail.com` |
-| `SMTP_PASSWORD` | the 16-letter app password |
-| `ALERT_EMAILS` | `you@gmail.com,family@gmail.com` |
-| `SEMAPHORE_API_KEY` | from semaphore.co |
-| `ALERT_PHONES` | `09171234567,09181234567` |
-| `SEMAPHORE_SENDER` | optional, your approved sender name |
-| `NTFY_TOPIC` | optional, e.g. `cansaga-flood-x7k2p` |
-
-Or from a terminal: `gh secret set GOOGLE_MAPS_API_KEY` (it prompts for the value).
-
-### 5. Test the alerts
-Actions → **Weather check** → *Run workflow* → set *force_level* to `EMERGENCY`.
-You should get an email and SMS marked as a test. The next scheduled run will send "All clear".
-
-## Local use
-
-```sh
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-.venv/bin/pytest -q
-.venv/bin/python src/run.py --dry-run                     # live data, no alerts sent
-.venv/bin/python src/run.py --fixture tests/fixtures/dec2011_storm.json
-.venv/bin/python -m http.server -d docs                   # open http://localhost:8000
-```
-
 ## Flood log: learning from real floods
 
 `data/flood_log.yaml` records floods seen on our street (depth, time, rain, nearby river readings).
@@ -92,8 +47,8 @@ With more floods logged, the rules sharpen; with a few dozen, a proper statistic
 
 ## Tuning
 After the first few rainy weeks, compare the dashboard with what actually happened on your street,
-and adjust `config.yaml`. Set `location.lat/lon` to a pin on your own street, and add your
-barangay / MDRRMO hotline numbers under `dashboard.hotlines`.
+and adjust `config.yaml`. The forecast point is Cansaga Barangay Hall; since this repo is public,
+keep it a public landmark, never a home address. Local hotline numbers go under `dashboard.hotlines`.
 
 ## Possible upgrades
 - **WeatherNext 3 ensemble (BigQuery):** probability of heavy rain 3–7 days ahead.

@@ -1,6 +1,6 @@
 # Cansaga Flood & Weather Watch settings.
 # Phone numbers, emails and API keys are NOT stored here. They live in
-# GitHub repo secrets (see README), because this repo is public.
+# GitHub repo secrets (Settings > Secrets and variables > Actions), because this repo is public.
 
 location:
   name: Cansaga, Consolacion, Cebu
