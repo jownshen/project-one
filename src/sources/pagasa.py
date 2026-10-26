@@ -24,6 +24,18 @@ TC_NAME_RE = re.compile(
     r"\b(Super Typhoon|Typhoon|Severe Tropical Storm|Tropical Storm|Tropical Depression)\s+[\"“]?([A-Z][A-Za-z]+)")
 
 
+# PAGASA's three thunderstorm tiers. A watch is a broad 12-hour outlook by
+# province; advisories and warnings name towns and cover the next 1-2 hours.
+STORM_RANK = {"watch": 1, "advisory": 2, "warning": 3}
+STORM_VALID = {"watch": timedelta(hours=12), "advisory": timedelta(hours=3),
+               "warning": timedelta(hours=3)}
+
+
+def _storm_kind(text):
+    m = re.search(r"thunderstorm\s+(watch|advisory|warning)", text, re.I)
+    return m.group(1).lower() if m else "advisory"
+
+
 def _norm(s):
     return re.sub(r"[\s#_-]", "", s).lower()
 
@@ -85,12 +97,12 @@ def parse_regional(html, province, town, now):
     if storms:
         for block in storms.find_all("div", recursive=False) or [storms]:
             text = block.get_text(" ", strip=True)
+            kind = _storm_kind(text)
             issued = _issued(text, now.tzinfo)
-            if issued is not None and now - issued > timedelta(hours=3):
-                continue  # stale; advisories cover the next 1-2 hours
+            if issued is not None and now - issued > STORM_VALID[kind]:
+                continue  # stale
             if covers(text, province, town) == "town":
-                kind = "warning" if re.search(r"thunderstorm warning", text, re.I) else "advisory"
-                if out["thunderstorm"] != "warning":
+                if STORM_RANK[kind] > STORM_RANK.get(out["thunderstorm"], 0):
                     out["thunderstorm"], out["thunderstorm_text"] = kind, text[:600]
     return out
 

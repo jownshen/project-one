@@ -225,7 +225,8 @@ function render(d) {
   if (pg.tcws) items.push(`<b>Wind Signal No. ${pg.tcws}</b> for Cebu ${esc(pg.tc_name || "")}`);
   else if (pg.tcws_nearby) items.push(`Wind Signal No. ${pg.tcws_nearby} for other parts of Cebu ${esc(pg.tc_name || "")}`);
   else items.push(pg.tc_active ? `Tropical cyclone inside PAR ${esc(pg.tc_name || "")}, no signal for Cebu` : "No tropical cyclone inside the Philippine Area of Responsibility");
-  items.push(pg.thunderstorm ? `Thunderstorm ${pg.thunderstorm} covers Consolacion` : "No current thunderstorm advisory for Consolacion");
+  items.push(pg.thunderstorm === "watch" ? "Thunderstorm watch covers Cebu (next 12 hours)"
+    : pg.thunderstorm ? `<b>Thunderstorm ${pg.thunderstorm}</b> covers Consolacion` : "No current thunderstorm alert for Consolacion");
   $("pagasa").innerHTML = d.sources.pagasa && !d.sources.pagasa.ok
     ? `<p class="fail">Couldn't read PAGASA this update. Check the links below.</p>`
     : `<ul class="reasons">${items.map((i) => `<li>${i}</li>`).join("")}</ul>`;

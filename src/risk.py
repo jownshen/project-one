@@ -15,7 +15,7 @@ Input shape (all times ISO 8601 with timezone):
       "pagasa": {"rainfall": None | "yellow" | "orange" | "red",
                  "tcws": int | None, "tcws_nearby": int | None,
                  "tc_active": bool, "tc_name": str | None,
-                 "thunderstorm": None | "advisory" | "warning"}
+                 "thunderstorm": None | "watch" | "advisory" | "warning"}
     }
 """
 from datetime import datetime, timedelta
@@ -126,6 +126,8 @@ def evaluate(inputs, th):
         add("WARNING", "PAGASA thunderstorm warning covers Consolacion")
     elif pg.get("thunderstorm") == "advisory":
         add("WATCH", "PAGASA thunderstorm advisory covers Consolacion")
+    elif pg.get("thunderstorm") == "watch":
+        add("WATCH", "PAGASA thunderstorm watch covers Cebu (next 12 hours)")
 
     # Learned from the flood log: conditions like a past flood on our street.
     # Rain counts the hours already fallen (recent_hourly) plus the forecast.

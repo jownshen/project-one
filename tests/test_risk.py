@@ -80,6 +80,7 @@ def test_current_heavy_rain_is_emergency():
     ({"tcws": 1}, "WARNING"),
     ({"tcws_nearby": 1}, "WATCH"),
     ({"tc_active": True}, "NORMAL"),
+    ({"thunderstorm": "watch"}, "WATCH"),
     ({"thunderstorm": "advisory"}, "WATCH"),
     ({"thunderstorm": "warning"}, "WARNING"),
 ])
@@ -138,16 +139,36 @@ def test_covers(text, expected):
 
 
 def test_real_regional_page_fresh_advisory():
+    # Advisory No. 22 names Consolacion, so it outranks the province-wide watch.
     html = (FIX / "pagasa_visprsd_2026-10-24.html").read_text()
     out = pagasa.parse_regional(html, "Cebu", "Consolacion", datetime(2026, 10, 24, 23, 0, tzinfo=PHT))
     assert out["rainfall"] is None
     assert out["thunderstorm"] == "advisory"
 
 
-def test_real_regional_page_stale_advisory_ignored():
+def test_real_regional_page_watch_lasts_12_hours():
+    html = (FIX / "pagasa_visprsd_2026-10-24.html").read_text()
+    out = pagasa.parse_regional(html, "Cebu", "Consolacion", datetime(2026, 10, 25, 9, 0, tzinfo=PHT))
+    assert out["thunderstorm"] == "watch"
+
+
+def test_real_regional_page_stale_watch_ignored():
     html = (FIX / "pagasa_visprsd_2026-10-24.html").read_text()
     out = pagasa.parse_regional(html, "Cebu", "Consolacion", datetime(2026, 10, 25, 12, 0, tzinfo=PHT))
     assert out["thunderstorm"] is None
+
+
+def _storms(*blocks):
+    return '<div id="thunderstorms">' + "".join(f"<div>{b}</div>" for b in blocks) + "</div>"
+
+
+def test_advisory_outranks_watch_and_expires_after_3_hours():
+    html = _storms(
+        "Thunderstorm Watch #VISPRSD Issued at 10:00 AM 26 October 2026 Thunderstorm is MORE LIKELY over #Cebu",
+        "Thunderstorm Advisory No. 9 #VISPRSD Issued at 11:00 AM 26 October 2026 expected over #Cebu(Consolacion, Liloan)")
+    at = lambda h: pagasa.parse_regional(html, "Cebu", "Consolacion", datetime(2026, 10, 26, h, 0, tzinfo=PHT))
+    assert at(12)["thunderstorm"] == "advisory"
+    assert at(15)["thunderstorm"] == "watch"
 
 
 def test_synthetic_red_rainfall_warning():
